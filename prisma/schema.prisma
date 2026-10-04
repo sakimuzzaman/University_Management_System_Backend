@@ -1,0 +1,363 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  STUDENT
+  INSTRUCTOR
+  ADMIN
+}
+
+enum SemesterStatus {
+  UPCOMING
+  REGISTRATION_OPEN
+  ONGOING
+  COMPLETED
+}
+
+enum EnrollmentStatus {
+  ENROLLED
+  DROPPED
+  COMPLETED
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCEEDED
+  FAILED
+  CANCELED
+  REFUNDED
+}
+
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+  LATE
+  EXCUSED
+}
+
+enum ExamType {
+  QUIZ
+  MIDTERM
+  FINAL
+  ASSIGNMENT
+}
+
+model User {
+  id        String    @id @default(uuid())
+  email     String    @unique
+  password  String?
+  name      String
+  role      Role      @default(STUDENT)
+  googleId  String?   @unique
+  avatar    String?
+  isActive  Boolean   @default(true)
+  deletedAt DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  studentProfile    StudentProfile?
+  instructorProfile InstructorProfile?
+  refreshTokens     RefreshToken[]
+  payments          Payment[]
+  auditLogs         AuditLog[]        @relation("Actor")
+  markedAttendance  Attendance[]      @relation("MarkedBy")
+
+  @@index([role])
+  @@index([deletedAt])
+}
+
+model StudentProfile {
+  id            String   @id @default(uuid())
+  userId        String   @unique
+  studentId     String   @unique
+  programId     String
+  admissionYear Int
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  program     Program       @relation(fields: [programId], references: [id])
+  enrollments Enrollment[]
+  attendance  Attendance[]
+  results     Result[]
+  gpaRecords  SemesterGPA[]
+
+  @@index([programId])
+}
+
+model InstructorProfile {
+  id           String   @id @default(uuid())
+  userId       String   @unique
+  employeeId   String   @unique
+  departmentId String
+  designation  String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  department Department @relation(fields: [departmentId], references: [id])
+  sections   Section[]
+
+  @@index([departmentId])
+}
+
+model Department {
+  id          String    @id @default(uuid())
+  name        String
+  code        String    @unique
+  description String?
+  deletedAt   DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  programs    Program[]
+  courses     Course[]
+  instructors InstructorProfile[]
+
+  @@index([deletedAt])
+}
+
+model Program {
+  id            String    @id @default(uuid())
+  name          String
+  code          String    @unique
+  departmentId  String
+  durationYears Int
+  deletedAt     DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  department Department       @relation(fields: [departmentId], references: [id])
+  students   StudentProfile[]
+  courses    Course[]
+
+  @@index([departmentId])
+  @@index([deletedAt])
+}
+
+model Course {
+  id           String    @id @default(uuid())
+  code         String    @unique
+  title        String
+  description  String?
+  credits      Int
+  departmentId String
+  programId    String
+  deletedAt    DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  department    Department           @relation(fields: [departmentId], references: [id])
+  program       Program              @relation(fields: [programId], references: [id])
+  prerequisites CoursePrerequisite[] @relation("HasPrerequisite")
+  requiredBy    CoursePrerequisite[] @relation("IsPrerequisite")
+  sections      Section[]
+
+  @@index([departmentId])
+  @@index([programId])
+  @@index([title])
+  @@index([deletedAt])
+}
+
+model CoursePrerequisite {
+  id             String @id @default(uuid())
+  courseId       String
+  prerequisiteId String
+
+  course       Course @relation("HasPrerequisite", fields: [courseId], references: [id], onDelete: Cascade)
+  prerequisite Course @relation("IsPrerequisite", fields: [prerequisiteId], references: [id], onDelete: Restrict)
+
+  @@unique([courseId, prerequisiteId])
+  @@index([prerequisiteId])
+}
+
+model Semester {
+  id          String         @id @default(uuid())
+  name        String
+  code        String         @unique
+  startDate   DateTime
+  endDate     DateTime
+  status      SemesterStatus @default(UPCOMING)
+  tuitionFee  Decimal        @db.Decimal(10, 2)
+  maxCredits  Int            @default(18)
+  deletedAt   DateTime?
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  sections   Section[]
+  payments   Payment[]
+  gpaRecords SemesterGPA[]
+
+  @@index([status])
+  @@index([deletedAt])
+}
+
+model Section {
+  id            String    @id @default(uuid())
+  courseId      String
+  semesterId    String
+  instructorId  String?
+  sectionCode   String
+  capacity      Int
+  enrolledCount Int       @default(0)
+  schedule      String?
+  deletedAt     DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  course      Course             @relation(fields: [courseId], references: [id])
+  semester    Semester           @relation(fields: [semesterId], references: [id])
+  instructor  InstructorProfile? @relation(fields: [instructorId], references: [id])
+  enrollments Enrollment[]
+  attendance  Attendance[]
+  exams       Exam[]
+
+  @@unique([courseId, semesterId, sectionCode])
+  @@index([semesterId])
+  @@index([instructorId])
+  @@index([deletedAt])
+}
+
+model Enrollment {
+  id         String           @id @default(uuid())
+  studentId  String
+  sectionId  String
+  status     EnrollmentStatus @default(ENROLLED)
+  enrolledAt DateTime         @default(now())
+  droppedAt  DateTime?
+  deletedAt  DateTime?
+  createdAt  DateTime         @default(now())
+  updatedAt  DateTime         @updatedAt
+
+  student StudentProfile @relation(fields: [studentId], references: [id])
+  section Section        @relation(fields: [sectionId], references: [id])
+
+  @@unique([studentId, sectionId])
+  @@index([studentId, status])
+  @@index([sectionId, status])
+}
+
+model Attendance {
+  id         String           @id @default(uuid())
+  sectionId  String
+  studentId  String
+  date       DateTime         @db.Date
+  status     AttendanceStatus
+  markedById String
+  createdAt  DateTime         @default(now())
+  updatedAt  DateTime         @updatedAt
+
+  section  Section        @relation(fields: [sectionId], references: [id])
+  student  StudentProfile @relation(fields: [studentId], references: [id])
+  markedBy User           @relation("MarkedBy", fields: [markedById], references: [id])
+
+  @@unique([sectionId, studentId, date])
+  @@index([sectionId, date])
+}
+
+model Exam {
+  id        String    @id @default(uuid())
+  sectionId String
+  title     String
+  type      ExamType
+  examDate  DateTime
+  maxMarks  Decimal   @db.Decimal(6, 2)
+  weight    Decimal   @db.Decimal(5, 2)
+  deletedAt DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  section Section  @relation(fields: [sectionId], references: [id])
+  results Result[]
+
+  @@index([sectionId])
+}
+
+model Result {
+  id        String   @id @default(uuid())
+  examId    String
+  studentId String
+  marks     Decimal  @db.Decimal(6, 2)
+  grade     String?
+  remarks   String?
+  published Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  exam    Exam           @relation(fields: [examId], references: [id], onDelete: Cascade)
+  student StudentProfile @relation(fields: [studentId], references: [id])
+
+  @@unique([examId, studentId])
+  @@index([studentId])
+}
+
+model Payment {
+  id                      String        @id @default(uuid())
+  userId                  String
+  semesterId              String
+  amount                  Decimal       @db.Decimal(10, 2)
+  currency                String        @default("usd")
+  status                  PaymentStatus @default(PENDING)
+  stripeCheckoutSessionId String?       @unique
+  stripePaymentIntentId   String?       @unique
+  paidAt                  DateTime?
+  createdAt               DateTime      @default(now())
+  updatedAt               DateTime      @updatedAt
+
+  user     User     @relation(fields: [userId], references: [id])
+  semester Semester @relation(fields: [semesterId], references: [id])
+
+  @@unique([userId, semesterId])
+  @@index([status])
+}
+
+model SemesterGPA {
+  id         String   @id @default(uuid())
+  studentId  String
+  semesterId String
+  gpa        Decimal  @db.Decimal(3, 2)
+  credits    Int
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  student  StudentProfile @relation(fields: [studentId], references: [id])
+  semester Semester       @relation(fields: [semesterId], references: [id])
+
+  @@unique([studentId, semesterId])
+}
+
+model RefreshToken {
+  id        String    @id @default(uuid())
+  userId    String
+  token     String    @unique
+  expiresAt DateTime
+  revokedAt DateTime?
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  actorId   String?
+  action    String
+  entity    String
+  entityId  String?
+  metadata  Json?
+  ipAddress String?
+  createdAt DateTime @default(now())
+
+  actor User? @relation("Actor", fields: [actorId], references: [id])
+
+  @@index([actorId])
+  @@index([entity, entityId])
+  @@index([createdAt])
+}
