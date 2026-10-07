@@ -1,6 +1,6 @@
 
 import { z } from "zod";
-import { AttendanceStatus,
+import { AttendanceStatus, 
          EnrollmentStatus, 
          ExamType, 
          SemesterStatus } from "../../generated/prisma/enums";
