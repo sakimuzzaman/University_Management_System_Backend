@@ -17,4 +17,8 @@ export const env = {
   JWT_ACCESS_EXPIRES_IN: process.env.JWT_ACCESS_EXPIRES_IN ?? "15m",
   JWT_REFRESH_EXPIRES_IN: process.env.JWT_REFRESH_EXPIRES_IN ?? "7d",
   GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID ?? "",
+  STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY ?? "",
+  STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET ?? "",
+  STRIPE_SUCCESS_URL: process.env.STRIPE_SUCCESS_URL ?? "",
+  STRIPE_CANCEL_URL: process.env.STRIPE_CANCEL_URL ?? "",
 };
