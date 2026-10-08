@@ -7,6 +7,7 @@ import { env } from "./config/env";
 import routes from "./routes";
 import { apiLimiter } from "./middlewares/rateLimiter";
 import { errorHandler } from "./middlewares/errorHandler";
+import { webhook as stripeWebhook } from "./modules/payment/payment.controller";
 
 const app = express();
 
@@ -19,6 +20,11 @@ app.use(
   }),
 );
 app.use(cookieParser());
+
+// Stripe webhook: needs the raw body for signature verification, and must
+// not be rate limited. Mounted before the general /api/v1 stack.
+app.use("/api/v1/payments/webhook", express.raw({ type: "application/json" }));
+app.post("/api/v1/payments/webhook", stripeWebhook);
 
 app.use((req, res, next) => {
   if (req.originalUrl === "/api/v1/payments/webhook") return next();
