@@ -1,12 +1,39 @@
-import { PrismaClient, Role, SemesterStatus } from "@prisma/client";
+import "dotenv/config";
+
+import {
+  PrismaClient,
+  Role,
+  SemesterStatus,
+} from "../src/generated/prisma/client";
+
+import { PrismaPg } from "@prisma/adapter-pg";
+import { Pool } from "pg";
 import bcrypt from "bcryptjs";
 
-const prisma = new PrismaClient();
+// PostgreSQL connection pool
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+});
+
+// Prisma 7 PostgreSQL adapter
+const adapter = new PrismaPg(pool);
+
+// Initialize Prisma Client with the adapter
+const prisma = new PrismaClient({
+  adapter,
+});
 
 async function main() {
+  console.log("Starting database seeding...");
+
+  // Hash passwords
   const adminHash = await bcrypt.hash("Admin@1234", 12);
   const instructorHash = await bcrypt.hash("Instructor@1234", 12);
   const studentHash = await bcrypt.hash("Student@1234", 12);
+
+  // ============================================
+  // 1. Create Departments
+  // ============================================
 
   const cse = await prisma.department.create({
     data: {
@@ -23,6 +50,10 @@ async function main() {
       description: "Department of Business",
     },
   });
+
+  // ============================================
+  // 2. Create Programs
+  // ============================================
 
   const bscCse = await prisma.program.create({
     data: {
@@ -41,6 +72,10 @@ async function main() {
       durationYears: 4,
     },
   });
+
+  // ============================================
+  // 3. Create Courses
+  // ============================================
 
   const cse101 = await prisma.course.create({
     data: {
@@ -75,10 +110,18 @@ async function main() {
     },
   });
 
+  // ============================================
+  // 4. Create Course Prerequisite
+  // ============================================
+
   await prisma.coursePrerequisite.create({
-    data: { courseId: cse201.id, prerequisiteId: cse101.id },
+    data: {
+      courseId: cse201.id,
+      prerequisiteId: cse101.id,
+    },
   });
 
+  // English course
   await prisma.course.create({
     data: {
       code: "ENG101",
@@ -90,6 +133,10 @@ async function main() {
     },
   });
 
+  // ============================================
+  // 5. Create Admin User
+  // ============================================
+
   const admin = await prisma.user.create({
     data: {
       email: "admin@ums.edu",
@@ -98,6 +145,10 @@ async function main() {
       role: Role.ADMIN,
     },
   });
+
+  // ============================================
+  // 6. Create Instructor and Profile
+  // ============================================
 
   const instructorUser = await prisma.user.create({
     data: {
@@ -113,8 +164,14 @@ async function main() {
         },
       },
     },
-    include: { instructorProfile: true },
+    include: {
+      instructorProfile: true,
+    },
   });
+
+  // ============================================
+  // 7. Create Student and Profile
+  // ============================================
 
   await prisma.user.create({
     data: {
@@ -132,6 +189,10 @@ async function main() {
     },
   });
 
+  // ============================================
+  // 8. Create Semester
+  // ============================================
+
   const semester = await prisma.semester.create({
     data: {
       name: "Fall 2025",
@@ -144,12 +205,22 @@ async function main() {
     },
   });
 
+  // ============================================
+  // 9. Create Course Sections
+  // ============================================
+
+  const instructorProfileId = instructorUser.instructorProfile?.id;
+
+  if (!instructorProfileId) {
+    throw new Error("Instructor profile was not created.");
+  }
+
   await prisma.section.createMany({
     data: [
       {
         courseId: cse101.id,
         semesterId: semester.id,
-        instructorId: instructorUser.instructorProfile!.id,
+        instructorId: instructorProfileId,
         sectionCode: "A",
         capacity: 2,
         schedule: "Sun/Tue 10:00-11:20 Room 301",
@@ -157,7 +228,7 @@ async function main() {
       {
         courseId: cse102.id,
         semesterId: semester.id,
-        instructorId: instructorUser.instructorProfile!.id,
+        instructorId: instructorProfileId,
         sectionCode: "A",
         capacity: 30,
         schedule: "Mon/Wed 12:00-13:20 Room 204",
@@ -165,7 +236,7 @@ async function main() {
       {
         courseId: cse201.id,
         semesterId: semester.id,
-        instructorId: instructorUser.instructorProfile!.id,
+        instructorId: instructorProfileId,
         sectionCode: "A",
         capacity: 25,
         schedule: "Sun/Tue 14:00-15:20 Room 110",
@@ -173,26 +244,40 @@ async function main() {
     ],
   });
 
+  // ============================================
+  // 10. Create Audit Log
+  // ============================================
+
   await prisma.auditLog.create({
     data: {
       actorId: admin.id,
       action: "SEED",
       entity: "Database",
-      metadata: { message: "Initial academic data seeded" },
+      metadata: {
+        message: "Initial academic data seeded",
+      },
     },
   });
 
-  console.log("Seed complete");
+  // ============================================
+  // 11. Display Seed Results
+  // ============================================
+
+  console.log("\n==================================");
+  console.log("Database seeding completed!");
+  console.log("==================================");
   console.log("ADMIN      admin@ums.edu       Admin@1234");
   console.log("INSTRUCTOR instructor@ums.edu  Instructor@1234");
   console.log("STUDENT    student@ums.edu     Student@1234");
+  console.log("==================================");
 }
 
 main()
-  .catch((e) => {
-    console.error(e);
-    
+  .catch((error: unknown) => {
+    console.error("Database seeding failed:", error);
+    process.exitCode = 1;
   })
   .finally(async () => {
     await prisma.$disconnect();
+    await pool.end();
   });

@@ -5,6 +5,7 @@ import departmentRoutes from "../modules/department/department.routes";
 import programRoutes from "../modules/program/program.routes";
 import courseRoutes from "../modules/course/course.routes";
 import paymentRoutes from "../modules/payment/payment.routes";
+import academicRoutes from "../modules/academic/academic.routes";
 import adminRoutes from "../modules/admin/admin.routes";
 
 
@@ -15,6 +16,7 @@ router.use("/users", userRoutes);
 router.use("/departments", departmentRoutes);
 router.use("/programs", programRoutes);
 router.use("/courses", courseRoutes);
+router.use( academicRoutes);
 router.use("/payments", paymentRoutes);
 router.use("/admin", adminRoutes);
 
