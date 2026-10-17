@@ -1,7 +1,7 @@
 import { Request } from "express";
-import { asyncHandler } from "../../utils/asyncHandler";
-import { sendResponse } from "../../utils/sendResponse";
-import * as adminService from "./admin.service";
+import { asyncHandler } from "../../utils/asyncHandler.js";
+import { sendResponse } from "../../utils/sendResponse.js";
+import * as adminService from "./admin.service.js";
 
 function actor(req: Request) {
   return { id: req.user!.id, role: req.user!.role };

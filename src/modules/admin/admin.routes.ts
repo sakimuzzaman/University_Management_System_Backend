@@ -1,15 +1,15 @@
 import { Router } from "express";
-import { authenticate, authorize } from "../../middlewares/auth";
-import { validate } from "../../middlewares/validate";
-import * as controller from "./admin.controller";
+import { authenticate, authorize } from "../../middlewares/auth.js";
+import { validate } from "../../middlewares/validate.js";
+import * as controller from "./admin.controller.js";
 import {
   listUsersSchema,
   userIdSchema,
   updateUserRoleSchema,
   toggleUserStatusSchema,
   listAuditLogsSchema,
-} from "./admin.validation";
-import { Role } from "../../generated/prisma/enums";
+} from "./admin.validation.js";
+import { Role } from "../../generated/prisma/enums.js";
 
 const router = Router();
 
