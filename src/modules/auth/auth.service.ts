@@ -1,17 +1,17 @@
 import crypto from "crypto";
 import { OAuth2Client } from "google-auth-library";
-import { prisma } from "../../config/prisma";
-import { env } from "../../config/env";
-import { ApiError } from "../../utils/ApiError";
-import { hashPassword, verifyPassword } from "../../utils/password";
+import { prisma } from "../../config/prisma.js";
+import { env } from "../../config/env.js";
+import { ApiError } from "../../utils/ApiError.js";
+import { hashPassword, verifyPassword } from "../../utils/password.js";
 import {
   generateRefreshToken,
   hashToken,
   refreshExpiryDate,
   signAccessToken,
-} from "../../utils/jwt";
-import { writeAudit } from "../../utils/audit";
-import { Prisma, Role } from "../../generated/prisma/client";
+} from "../../utils/jwt.js";
+import { writeAudit } from "../../utils/audit.js";
+import { Prisma, Role } from "../../generated/prisma/client.js";
 
 const userSelect = {
   id: true,
@@ -85,7 +85,7 @@ export async function register(input: {
   const passwordHash = await hashPassword(input.password);
 
   try {
-    const user = await prisma.$transaction(async (tx) => {
+    const user = await prisma.$transaction(async (tx : any) => {
       const studentId = await generateStudentId(tx, input.admissionYear);
       return tx.user.create({
         data: {

@@ -1,9 +1,9 @@
 
-import { prisma } from "../../config/prisma";
-import { ApiError } from "../../utils/ApiError";
-import { getPagination, pageMeta } from "../../utils/pagination";
-import { writeAudit } from "../../utils/audit";
-import { Prisma } from "../../generated/prisma/client";
+import { prisma } from "../../config/prisma.js";
+import { ApiError } from "../../utils/ApiError.js";
+import { getPagination, pageMeta } from "../../utils/pagination.js";
+import { writeAudit } from "../../utils/audit.js";
+import { Prisma } from "../../generated/prisma/client.js";
 
 const courseSelect = {
   id: true,
@@ -151,7 +151,7 @@ export async function updateCourse(
   await assertDepartmentAndProgram(departmentId, programId);
   if (input.prerequisiteIds) await assertPrerequisites(id, input.prerequisiteIds);
 
-  const course = await prisma.$transaction(async (tx) => {
+  const course = await prisma.$transaction(async (tx : any) => {
     if (input.prerequisiteIds) {
       await tx.coursePrerequisite.deleteMany({ where: { courseId: id } });
       if (input.prerequisiteIds.length) {

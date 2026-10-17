@@ -1,6 +1,6 @@
-import { asyncHandler } from "../../utils/asyncHandler";
-import { sendResponse } from "../../utils/sendResponse";
-import * as courseService from "./course.service";
+import { asyncHandler } from "../../utils/asyncHandler.js";
+import { sendResponse } from "../../utils/sendResponse.js";
+import * as courseService from "./course.service.js";
 
 export const create = asyncHandler(async (req, res) => {
   const course = await courseService.createCourse(req.body, req.user!.id, req.ip);

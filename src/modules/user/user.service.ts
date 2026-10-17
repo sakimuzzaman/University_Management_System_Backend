@@ -1,8 +1,8 @@
 import crypto from "crypto";
-import { prisma } from "../../config/prisma";
-import { ApiError } from "../../utils/ApiError";
-import { writeAudit } from "../../utils/audit";
-import { Role } from "../../generated/prisma/enums";
+import { prisma } from "../../config/prisma.js";
+import { ApiError } from "../../utils/ApiError.js";
+import { writeAudit } from "../../utils/audit.js";
+import { Role } from "../../generated/prisma/enums.js";
 
 const userSelect = {
   id: true,

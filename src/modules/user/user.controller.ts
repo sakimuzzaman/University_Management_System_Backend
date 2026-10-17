@@ -1,6 +1,6 @@
-import { asyncHandler } from "../../utils/asyncHandler";
-import { sendResponse } from "../../utils/sendResponse";
-import * as userService from "./user.service";
+import { asyncHandler } from "../../utils/asyncHandler.js";
+import { sendResponse } from "../../utils/sendResponse.js";
+import * as userService from "./user.service.js";
 
 export const getMe = asyncHandler(async (req, res) => {
   const user = await userService.getMe(req.user!.id);

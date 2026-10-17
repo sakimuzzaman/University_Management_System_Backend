@@ -1,7 +1,7 @@
 import { Router } from "express";
-import { authenticate, authorize } from "../../middlewares/auth";
-import { validate } from "../../middlewares/validate";
-import * as controller from "./academic.controller";
+import { authenticate, authorize } from "../../middlewares/auth.js";
+import { validate } from "../../middlewares/validate.js";
+import * as controller from "./academic.controller.js";
 import {
   assignInstructorSchema,
   createExamSchema,
@@ -25,8 +25,8 @@ import {
   updateSectionSchema,
   updateSemesterSchema,
   updateSemesterStatusSchema,
-} from "./academic.validation";
-import { Role } from "../../generated/prisma/enums";
+} from "./academic.validation.js";
+import { Role } from "../../generated/prisma/enums.js";
 
 const router = Router();
 

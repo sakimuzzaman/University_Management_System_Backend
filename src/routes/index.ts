@@ -1,12 +1,12 @@
 import { Router } from "express";
-import authRoutes from "../modules/auth/auth.routes";
-import userRoutes from "../modules/user/user.routes";
-import departmentRoutes from "../modules/department/department.routes";
-import programRoutes from "../modules/program/program.routes";
-import courseRoutes from "../modules/course/course.routes";
-import paymentRoutes from "../modules/payment/payment.routes";
-import academicRoutes from "../modules/academic/academic.routes";
-import adminRoutes from "../modules/admin/admin.routes";
+import authRoutes from "../modules/auth/auth.routes.js";
+import userRoutes from "../modules/user/user.routes.js";
+import departmentRoutes from "../modules/department/department.routes.js";
+import programRoutes from "../modules/program/program.routes.js";
+import courseRoutes from "../modules/course/course.routes.js";
+import paymentRoutes from "../modules/payment/payment.routes.js";
+import academicRoutes from "../modules/academic/academic.routes.js";
+import adminRoutes from "../modules/admin/admin.routes.js";
 
 
 const router = Router();

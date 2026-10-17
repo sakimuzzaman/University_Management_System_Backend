@@ -1,12 +1,12 @@
 import Stripe from "stripe";
-import { prisma } from "../../config/prisma";
-import { env } from "../../config/env";
-import { getStripe } from "../../config/stripe";
-import { ApiError } from "../../utils/ApiError";
-import { getPagination, pageMeta } from "../../utils/pagination";
-import { writeAudit } from "../../utils/audit";
-import { PaymentStatus, Role } from "../../generated/prisma/enums";
-import { Prisma } from "../../generated/prisma/client";
+import { prisma } from "../../config/prisma.js";
+import { env } from "../../config/env.js";
+import { getStripe } from "../../config/stripe.js";
+import { ApiError } from "../../utils/ApiError.js";
+import { getPagination, pageMeta } from "../../utils/pagination.js";
+import { writeAudit } from "../../utils/audit.js";
+import { PaymentStatus, Role } from "../../generated/prisma/enums.js";
+import { Prisma } from "../../generated/prisma/client.js";
 
 type Actor = { id: string; role: Role };
 type PageQuery = { page?: number; limit?: number };
@@ -176,7 +176,7 @@ async function transitionPayment(options: {
   stripePaymentIntentId?: string | null;
   eventType: string;
 }) {
-  return prisma.$transaction(async (tx) => {
+  return prisma.$transaction(async (tx : any) => {
     const current = await tx.payment.findUnique({
       where: { id: options.paymentId },
     });
@@ -349,7 +349,7 @@ export async function listMyPayments(
   ]);
 
   return {
-    items: items.map((payment) => ({ ...payment, amount: Number(payment.amount) })),
+    items: items.map((payment: { amount: any; }) => ({ ...payment, amount: Number(payment.amount) })),
     meta: pageMeta(total, page, limit),
   };
 }
@@ -420,7 +420,7 @@ export async function cancelPayment(id: string, actor: Actor, ipAddress?: string
     }
   }
 
-  return prisma.$transaction(async (tx) => {
+  return prisma.$transaction(async (tx : any) => {
     const updated = await tx.payment.updateMany({
       where: { id, status: PaymentStatus.PENDING },
       data: { status: PaymentStatus.CANCELED },
@@ -477,7 +477,7 @@ export async function refundPayment(id: string, actor: Actor, ipAddress?: string
     };
   }
 
-  return prisma.$transaction(async (tx) => {
+  return prisma.$transaction(async (tx : any) => {
     const updated = await tx.payment.updateMany({
       where: { id, status: PaymentStatus.SUCCEEDED },
       data: { status: PaymentStatus.REFUNDED },

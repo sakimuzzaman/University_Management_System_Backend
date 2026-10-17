@@ -3,7 +3,7 @@ import { z } from "zod";
 import { AttendanceStatus, 
          EnrollmentStatus, 
          ExamType, 
-         SemesterStatus } from "../../generated/prisma/enums";
+         SemesterStatus } from "../../generated/prisma/enums.js";
 
 const uuid = z.string().uuid();
 const page = z.coerce.number().int().positive().optional();

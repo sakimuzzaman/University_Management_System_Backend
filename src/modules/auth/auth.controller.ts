@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import { asyncHandler } from "../../utils/asyncHandler";
-import { sendResponse } from "../../utils/sendResponse";
-import * as authService from "./auth.service";
+import { asyncHandler } from "../../utils/asyncHandler.js";
+import { sendResponse } from "../../utils/sendResponse.js";
+import * as authService from "./auth.service.js";
 
 function refreshFrom(req: Request) {
   return req.body?.refreshToken || req.cookies?.refreshToken;

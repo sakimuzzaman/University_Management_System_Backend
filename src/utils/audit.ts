@@ -1,6 +1,6 @@
 // import { Prisma } from "@prisma/client";
-import { prisma } from "../config/prisma";
-import { Prisma } from "../generated/prisma/client";
+import { prisma } from "../config/prisma.js";
+import { Prisma } from "../generated/prisma/client.js";
 
 export async function writeAudit(input: {
   actorId?: string | null;

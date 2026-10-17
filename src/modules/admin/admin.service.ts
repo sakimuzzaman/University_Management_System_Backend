@@ -1,9 +1,9 @@
-import { prisma } from "../../config/prisma";
-import { ApiError } from "../../utils/ApiError";
-import { getPagination, pageMeta } from "../../utils/pagination";
-import { writeAudit } from "../../utils/audit";
-import { PaymentStatus, Role } from "../../generated/prisma/enums";
-import { Prisma } from "../../generated/prisma/client";
+import { prisma } from "../../config/prisma.js";
+import { ApiError } from "../../utils/ApiError.js";
+import { getPagination, pageMeta } from "../../utils/pagination.js";
+import { writeAudit } from "../../utils/audit.js";
+import { PaymentStatus, Role } from "../../generated/prisma/enums.js";
+import { Prisma } from "../../generated/prisma/client.js";
 
 type Actor = { id: string; role: Role };
 
@@ -217,7 +217,7 @@ export async function updateUserRole(
     throw new ApiError(409, "User already has this role");
   }
 
-  const updated = await prisma.$transaction(async (tx) => {
+  const updated = await prisma.$transaction(async (tx : any) => {
     const result = await tx.user.update({
       where: { id },
       data: { role },
@@ -272,7 +272,7 @@ export async function toggleUserStatus(
     throw new ApiError(409, `User is already ${isActive ? "active" : "inactive"}`);
   }
 
-  const updated = await prisma.$transaction(async (tx) => {
+  const updated = await prisma.$transaction(async (tx : any) => {
     const result = await tx.user.update({
       where: { id },
       data: { isActive },

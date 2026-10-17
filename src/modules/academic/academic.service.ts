@@ -3,12 +3,12 @@ import {
   PaymentStatus,
   Role,
   SemesterStatus,
-} from "../../generated/prisma/enums";
-import { prisma } from "../../config/prisma";
-import { ApiError } from "../../utils/ApiError";
-import { getPagination, pageMeta } from "../../utils/pagination";
-import { calculateCourseOutcome, gradeForPercentage } from "./grade";
-import { Prisma } from "../../generated/prisma/client";
+} from "../../generated/prisma/enums.js";
+import { prisma } from "../../config/prisma.js";
+import { ApiError } from "../../utils/ApiError.js";
+import { getPagination, pageMeta } from "../../utils/pagination.js";
+import { calculateCourseOutcome, gradeForPercentage } from "./grade.js";
+import { Prisma } from "../../generated/prisma/client.js";
 
 type Actor = { id: string; role: Role };
 type PageQuery = { page?: number; limit?: number };

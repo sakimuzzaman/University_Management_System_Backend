@@ -1,10 +1,10 @@
 import { Request } from "express";
 import Stripe from "stripe";
-import { env } from "../../config/env";
-import { getStripe } from "../../config/stripe";
-import { asyncHandler } from "../../utils/asyncHandler";
-import { sendResponse } from "../../utils/sendResponse";
-import * as paymentService from "./payment.service";
+import { env } from "../../config/env.js";
+import { getStripe } from "../../config/stripe.js";
+import { asyncHandler } from "../../utils/asyncHandler.js";
+import { sendResponse } from "../../utils/sendResponse.js";
+import * as paymentService from "./payment.service.js";
 
 function actor(req: Request) {
   return { id: req.user!.id, role: req.user!.role };

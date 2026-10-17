@@ -1,8 +1,8 @@
 import crypto from "crypto";
 import jwt from "jsonwebtoken";
 // import { Role } from "@prisma/client";
-import { env } from "../config/env";
-import { Role } from "../generated/prisma/enums";
+import { env } from "../config/env.js";
+import { Role } from "../generated/prisma/enums.js";
 
 export interface AccessTokenPayload {
   sub: string;

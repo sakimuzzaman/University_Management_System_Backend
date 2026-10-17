@@ -1,9 +1,9 @@
 import { NextFunction, Request, Response } from "express";
 
-import { prisma } from "../config/prisma";
-import { ApiError } from "../utils/ApiError";
-import { verifyAccessToken } from "../utils/jwt";
-import { Role } from "../generated/prisma/enums";
+import { prisma } from "../config/prisma.js";
+import { ApiError } from "../utils/ApiError.js";
+import { verifyAccessToken } from "../utils/jwt.js";
+import { Role } from "../generated/prisma/enums.js";
 
 export async function authenticate(req: Request, _res: Response, next: NextFunction) {
   try {

@@ -2,12 +2,13 @@ import express from "express";
 import cors from "cors";
 import helmet from "helmet";
 import cookieParser from "cookie-parser";
-import { prisma } from "./config/prisma";
-import { env } from "./config/env";
-import routes from "./routes";
-import { apiLimiter } from "./middlewares/rateLimiter";
-import { errorHandler } from "./middlewares/errorHandler";
-import { webhook as stripeWebhook } from "./modules/payment/payment.controller";
+import { prisma } from "./config/prisma.js";
+import { env } from "./config/env.js";
+
+import { apiLimiter } from "./middlewares/rateLimiter.js";
+import { errorHandler } from "./middlewares/errorHandler.js";
+import { webhook as stripeWebhook } from "./modules/payment/payment.controller.js";
+import router from "./routes/index.js";
 
 const app = express();
 
@@ -46,7 +47,7 @@ app.get("/api/v1/health", async (_req, res) => {
   });
 });
 
-app.use("/api/v1", apiLimiter, routes);
+app.use("/api/v1", apiLimiter, router);
 
 app.use((_req, res) => {
   res.status(404).json({

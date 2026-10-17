@@ -1,7 +1,7 @@
-import { prisma } from "../../config/prisma";
-import { ApiError } from "../../utils/ApiError";
-import { getPagination, pageMeta } from "../../utils/pagination";
-import { writeAudit } from "../../utils/audit";
+import { prisma } from "../../config/prisma.js";
+import { ApiError } from "../../utils/ApiError.js";
+import { getPagination, pageMeta } from "../../utils/pagination.js";
+import { writeAudit } from "../../utils/audit.js";
 
 export async function createProgram(
   input: { name: string; code: string; departmentId: string; durationYears: number },

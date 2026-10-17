@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
-import { ApiError } from "../utils/ApiError";
-import { env } from "../config/env";
-import { Prisma } from "../generated/prisma/client";
+import { ApiError } from "../utils/ApiError.js";
+import { env } from "../config/env.js";
+import { Prisma } from "../generated/prisma/client.js";
 
 export function errorHandler(err: unknown, _req: Request, res: Response, _next: NextFunction) {
   if (err instanceof ApiError) {

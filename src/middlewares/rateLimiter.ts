@@ -1,5 +1,5 @@
 import rateLimit from "express-rate-limit";
-import { env } from "../config/env";
+import { env } from "../config/env.js";
 
 const handler = (_req: unknown, res: any) => {
   res.status(429).json({

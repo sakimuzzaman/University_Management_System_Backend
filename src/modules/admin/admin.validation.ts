@@ -1,6 +1,6 @@
 
 import { z } from "zod";
-import { Role } from "../../generated/prisma/enums";
+import { Role } from "../../generated/prisma/enums.js";
 
 const uuid = z.string().uuid();
 const page = z.coerce.number().int().positive().optional();

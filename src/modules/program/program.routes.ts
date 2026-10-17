@@ -1,8 +1,8 @@
 import { Router } from "express";
-import { authenticate, authorize } from "../../middlewares/auth";
-import { validate } from "../../middlewares/validate";
-import * as controller from "./program.controller";
-import { createProgramSchema, listProgramSchema } from "./program.validation";
+import { authenticate, authorize } from "../../middlewares/auth.js";
+import { validate } from "../../middlewares/validate.js";
+import * as controller from "./program.controller.js";
+import { createProgramSchema, listProgramSchema } from "./program.validation.js";
 
 const router = Router();
 

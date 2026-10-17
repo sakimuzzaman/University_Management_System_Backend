@@ -1,6 +1,6 @@
-import { prisma } from "../../config/prisma";
-import { getPagination, pageMeta } from "../../utils/pagination";
-import { writeAudit } from "../../utils/audit";
+import { prisma } from "../../config/prisma.js";
+import { getPagination, pageMeta } from "../../utils/pagination.js";
+import { writeAudit } from "../../utils/audit.js";
 
 export async function createDepartment(
   input: { name: string; code: string; description?: string },

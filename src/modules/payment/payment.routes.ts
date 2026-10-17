@@ -1,14 +1,14 @@
 import { Router } from "express";
-import { authenticate, authorize } from "../../middlewares/auth";
-import { validate } from "../../middlewares/validate";
-import * as controller from "./payment.controller";
+import { authenticate, authorize } from "../../middlewares/auth.js";
+import { validate } from "../../middlewares/validate.js";
+import * as controller from "./payment.controller.js";
 import {
   checkoutSessionSchema,
   initiatePaymentSchema,
   listMyPaymentsSchema,
   paymentIdSchema,
-} from "./payment.validation";
-import { Role } from "../../generated/prisma/enums";
+} from "./payment.validation.js";
+import { Role } from "../../generated/prisma/enums.js";
 
 const router = Router();
 
