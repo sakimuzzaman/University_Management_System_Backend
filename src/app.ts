@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
-import helmet from "helmet";
+// import helmet from "helmet";
+import { default as helmet } from "helmet";
 import cookieParser from "cookie-parser";
 
 import { prisma } from "./config/prisma.js";
